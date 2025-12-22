@@ -1,0 +1,40 @@
+tasks:
+  ping1:
+    command: "ping 1.1.1.1"
+    instances: 2
+    autoLaunch: true
+    restart: always # always, never, on-failure
+    failureExitCodes:
+      - 1
+      - 2
+    successfullStartTimeout: 10 # seconds
+    restartsAttempts: 5
+    stopingSignal: SIGTERM
+    gracefulStopTimeout: 15 # seconds
+    stdout: /var/log/sleeper_stdout.log # or null for disabling
+    stderr: /var/log/sleeper_stderr.log # or null for disabling
+    environment:
+      ENV_VAR1: value1
+      ENV_VAR2: value2
+    workingDirectory: /tmp
+    unmask: 22
+
+  ping2:
+    command: "ping 8.8.8.8"
+    instances: 2
+    autoLaunch: true
+    restart: always # always, never, on-failure
+    failureExitCodes:
+      - 1
+      - 2
+    successfullStartTimeout: 10 # seconds
+    restartsAttempts: 5
+    stopingSignal: SIGTERM
+    gracefulStopTimeout: 15 # seconds
+    stdout: /var/log/sleeper_stdout.log # or null for disabling
+    stderr: /var/log/sleeper_stderr.log # or null for disabling
+    environment:
+      ENV_VAR1: value1
+      ENV_VAR2: value2
+    workingDirectory: /tmp
+    unmask: 22
