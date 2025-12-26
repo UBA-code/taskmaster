@@ -6,15 +6,6 @@ import (
 	"github.com/uba-code/taskmaster/internal/config"
 )
 
-/*
-
-todo: implement reload config for tasks:
-- if task exists and is different than old task, stop old task and start new one
-- if task does not exist, add it and start it
-- if task exists in old config but not in new one, stop it
-
-*/
-
 func ReloadConfig(existingTasks *Tasks, filename string) {
 	cfg := config.ParseConfig(filename)
 

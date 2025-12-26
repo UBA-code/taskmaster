@@ -58,7 +58,7 @@ tasks:
     # workingDirectory: /tmp
     # unmask: 0000
 
-  # ping3:
-  #   command: "ping pornhub.com"
-  #   instances: 5
-  #   autoLaunch: true
+  ping3:
+    command: "ping pornhub.com"
+    instances: 5
+    autoLaunch: true

@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 
 	"github.com/uba-code/taskmaster/internal/cli"
 	"github.com/uba-code/taskmaster/internal/config"
@@ -23,6 +25,14 @@ func main() {
 	defer rl.Close()
 	logger.SetReadline(rl)
 	var tasks = cli.NewTasksObj(cfg)
+
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, syscall.SIGHUP, syscall.SIGTERM)
+
+	go func() {
+		<-signalChan
+		cli.ReloadConfig(tasks, os.Args[1])
+	}()
 
 	//* cli loop
 	for {
