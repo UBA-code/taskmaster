@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -16,6 +17,7 @@ func main() {
 	}
 	var cfg = config.ParseConfig(os.Args[1])
 	_ = cfg
+	logger.InitializeLogFile()
 
 	var rl = cli.ReadlineInit()
 	defer rl.Close()
@@ -26,14 +28,30 @@ func main() {
 	for {
 		line, err := rl.Readline()
 		if err == io.EOF || strings.TrimSpace(line) == "exit" {
-			// Ctrl+D pressed, exit
-			// for _, process := range tasks.Processes {
-			// 	process.CmdChan <- "stop"
-			// }
+			logger.Info("Exiting Taskmaster...")
+			for processName, proc := range tasks.Processes {
+				for instanceName, p := range proc.Instances {
+					if p.Status == "STARTED" || p.Status == "RUNNING" {
+						p.CmdChan <- "stop"
+					}
+					if p.Stderr != nil {
+						if err := p.Stderr.Close(); err != nil {
+							logger.Error(fmt.Sprintf("Failed to close stderr for process '%s' of task '%s': %v", instanceName, processName, err))
+						}
+					}
+					if p.Stdout != nil {
+						if err := p.Stdout.Close(); err != nil {
+							logger.Error(fmt.Sprintf("Failed to close stdout for process '%s' of task '%s': %v", instanceName, processName, err))
+						}
+					}
+					logger.Info("Stopping process '" + instanceName + "' of task '" + processName + "'")
+				}
+			}
+			tasks.WaitGroup.Wait()
 			break
 		}
 		if len(line) > 0 {
-			cli.CommandHandler(line, tasks)
+			cli.CommandHandler(line, tasks, os.Args[1])
 		}
 	}
 }

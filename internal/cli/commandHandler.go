@@ -7,7 +7,7 @@ import (
 	"github.com/uba-code/taskmaster/internal/logger"
 )
 
-func CommandHandler(command string, tasks *Tasks) {
+func CommandHandler(command string, tasks *Tasks, filename string) {
 	commandParts := strings.Split(strings.TrimSpace(command), " ")
 	command = commandParts[0]
 
@@ -17,7 +17,7 @@ func CommandHandler(command string, tasks *Tasks) {
 
 	case "reload":
 		logger.Info("Configuration reloaded.")
-
+		ReloadConfig(tasks, filename)
 	case "start", "stop", "restart":
 		if len(commandParts) < 2 {
 			logger.Error("Please specify the task to " + command)
@@ -25,7 +25,9 @@ func CommandHandler(command string, tasks *Tasks) {
 		}
 		argument := commandParts[1]
 		if process, exists := tasks.Processes[argument]; exists {
-			process.CmdChan <- command
+			for _, p := range process.Instances {
+				p.CmdChan <- command
+			}
 		} else {
 			logger.Error("Task '" + argument + "' not found.")
 		}

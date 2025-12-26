@@ -1,40 +1,64 @@
 tasks:
-  ping1:
-    command: "ping 1.1.1.1"
-    instances: 2
-    autoLaunch: true
-    restart: always # always, never, on-failure
-    failureExitCodes:
-      - 1
-      - 2
-    successfullStartTimeout: 10 # seconds
-    restartsAttempts: 5
-    stopingSignal: SIGTERM
-    gracefulStopTimeout: 15 # seconds
-    stdout: /var/log/sleeper_stdout.log # or null for disabling
-    stderr: /var/log/sleeper_stderr.log # or null for disabling
-    environment:
-      ENV_VAR1: value1
-      ENV_VAR2: value2
-    workingDirectory: /tmp
-    unmask: 22
+  # sleeper:
+  #   command: "touch strictFile"
+  #   instances: 2
+  #   autoLaunch: true
+  #   restart: on-failure # always, never, on-failure
+  #   expectedExitCodes:
+  #     - 0
+  #   successfulStartTimeout: 1 # seconds
+  #   restartsAttempts: 2
+  #   stopingSignal: SIGTERM
+  #   gracefulStopTimeout: 15 # seconds
+  #   stdout: /var/log/sleeper_stdout.log
+  #   stderr: /var/log/sleeper_stderr.log
+  #   environment:
+  #     ENV_VAR1: value1
+  #     ENV_VAR2: value2
+  #   workingDirectory: /tmp
+  #   unmask: 777
 
-  ping2:
-    command: "ping 8.8.8.8"
-    instances: 2
+  ping:
+    command: "ping google.com"
+    instances: 5
     autoLaunch: true
-    restart: always # always, never, on-failure
-    failureExitCodes:
+    restart: on-failure # always, never, on-failure
+    expectedExitCodes:
       - 1
       - 2
-    successfullStartTimeout: 10 # seconds
-    restartsAttempts: 5
+    successfulStartTimeout: 10 # seconds
+    restartsAttempts: 2
     stopingSignal: SIGTERM
     gracefulStopTimeout: 15 # seconds
-    stdout: /var/log/sleeper_stdout.log # or null for disabling
-    stderr: /var/log/sleeper_stderr.log # or null for disabling
+    stdout: ./ping_stdout.log
+    stderr: ./ping_stderr.log
     environment:
-      ENV_VAR1: value1
+      PINGER: "FUCKING PINGER"
       ENV_VAR2: value2
     workingDirectory: /tmp
-    unmask: 22
+    unmask: 0022
+
+  # ping2:
+  #   command: "ping 1.1.1.1"
+  #   instances: 5
+  #   autoLaunch: true
+    # restart: on-failure # always, never, on-failure
+    # expectedExitCodes:
+    #   - 1
+    #   - 2
+    # successfulStartTimeout: 10 # seconds
+    # restartsAttempts: 2
+    # stopingSignal: SIGTERM
+    # gracefulStopTimeout: 15 # seconds
+    # stdout: ./ping_stdout.log
+    # stderr: ./ping_stderr.log
+    # environment:
+    #   PINGER: "FUCKING PINGER"
+    #   ENV_VAR2: value2
+    # workingDirectory: /tmp
+    # unmask: 0000
+
+  # ping3:
+  #   command: "ping pornhub.com"
+  #   instances: 5
+  #   autoLaunch: true
