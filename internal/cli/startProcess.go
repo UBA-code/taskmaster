@@ -97,14 +97,14 @@ func (p *Process) StartTaskManager(autoStart bool, tasks *Tasks) {
 			}
 
 			running := true
-			successTimeout := make(<-chan time.Time)
-			if p.Task.SuccessfulStartTimeout > 0 {
-				successTimeout = time.After(time.Duration(p.Task.SuccessfulStartTimeout) * time.Second)
-			} else {
-				p.Status = "RUNNING"
-				logger.Info(fmt.Sprintf("Process '%s' has started successfully", p.Name))
-			}
 			for running {
+				successTimeout := make(<-chan time.Time)
+				if p.Task.SuccessfulStartTimeout > 0 {
+					successTimeout = time.After(time.Duration(p.Task.SuccessfulStartTimeout) * time.Second)
+				} else {
+					p.Status = "RUNNING"
+					logger.Info(fmt.Sprintf("Process '%s' has started successfully", p.Name))
+				}
 				select {
 				//? if process started successfully after timeout
 				case <-successTimeout:
