@@ -89,6 +89,28 @@ func (p *ProcessInstances) StopAllInstances() {
 	p.Wg.Wait()
 }
 
+func StopAllProcesses(tasks *Tasks) {
+	for _, processInstances := range tasks.Processes {
+		processInstances.StopAllInstances()
+	}
+}
+
+func StartAllProcesses(tasks *Tasks) {
+	for _, processInstances := range tasks.Processes {
+		for _, instance := range processInstances.Instances {
+			instance.CmdChan <- "start"
+		}
+	}
+}
+
+func RestartAllProcesses(tasks *Tasks) {
+	for _, processInstances := range tasks.Processes {
+		for _, instance := range processInstances.Instances {
+			instance.CmdChan <- "restart"
+		}
+	}
+}
+
 func setOutputFiles(stdoutPath string, stderrPath string) (stdout *os.File, stderr *os.File) {
 	if stdoutPath == "" {
 		stdoutPath = "/dev/null"

@@ -6,8 +6,11 @@ var completer = readline.NewPrefixCompleter(
 	readline.PcItem("status"),
 	readline.PcItem("reload"),
 	readline.PcItem("start"),
+	readline.PcItem("start all"),
 	readline.PcItem("restart"),
+	readline.PcItem("restart all"),
 	readline.PcItem("stop"),
+	readline.PcItem("stop all"),
 	readline.PcItem("exit"),
 	readline.PcItem("help"),
 )

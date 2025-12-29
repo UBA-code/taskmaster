@@ -1,6 +1,6 @@
 tasks:
   # sleeper:
-  #   command: "touch strictFile"
+    # command: "touch strictFile"
   #   instances: 2
   #   autoLaunch: true
   #   restart: on-failure # always, never, on-failure
@@ -42,21 +42,21 @@ tasks:
   #   command: "ping 1.1.1.1"
   #   instances: 5
   #   autoLaunch: true
-    # restart: on-failure # always, never, on-failure
-    # expectedExitCodes:
-    #   - 1
-    #   - 2
-    # successfulStartTimeout: 10 # seconds
-    # restartsAttempts: 2
-    # stopingSignal: SIGTERM
-    # gracefulStopTimeout: 15 # seconds
-    # stdout: ./ping_stdout.log
-    # stderr: ./ping_stderr.log
-    # environment:
-    #   PINGER: "FUCKING PINGER"
-    #   ENV_VAR2: value2
-    # workingDirectory: /tmp
-    # unmask: 0000
+  # restart: on-failure # always, never, on-failure
+  # expectedExitCodes:
+  #   - 1
+  #   - 2
+  # successfulStartTimeout: 10 # seconds
+  # restartsAttempts: 2
+  # stopingSignal: SIGTERM
+  # gracefulStopTimeout: 15 # seconds
+  # stdout: ./ping_stdout.log
+  # stderr: ./ping_stderr.log
+  # environment:
+  #   PINGER: "FUCKING PINGER"
+  #   ENV_VAR2: value2
+  # workingDirectory: /tmp
+  # unmask: 0000
 
   ping3:
     command: "ping pornhub.com"

@@ -29,6 +29,7 @@ func main() {
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, syscall.SIGHUP, syscall.SIGTERM)
 
+	//* SIGHUP handler to reload config
 	go func() {
 		<-signalChan
 		cli.ReloadConfig(tasks, os.Args[1])
