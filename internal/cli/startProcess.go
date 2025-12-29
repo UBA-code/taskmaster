@@ -32,6 +32,17 @@ func shouldRestart(p *Process, exitCode int) bool {
 			p.Restarts < p.Task.RestartsAttempts)
 }
 
+func startStartTimeoutTimer(p *Process) <-chan time.Time {
+	successTimeout := make(<-chan time.Time)
+	if p.Task.SuccessfulStartTimeout > 0 {
+		successTimeout = time.After(time.Duration(p.Task.SuccessfulStartTimeout) * time.Second)
+	} else {
+		p.Status = "RUNNING"
+		logger.Info(fmt.Sprintf("Process '%s' has started successfully", p.Name))
+	}
+	return successTimeout
+}
+
 func startProcess(command string, p *Process, tasks *Tasks) (*exec.Cmd, chan error) {
 	cmd := exec.Command("sh", "-c", "umask "+p.Task.Unmask+" && exec "+command)
 	env := os.Environ()
@@ -96,15 +107,10 @@ func (p *Process) StartTaskManager(autoStart bool, tasks *Tasks) {
 				continue
 			}
 
+			successTimeout := startStartTimeoutTimer(p)
+
 			running := true
 			for running {
-				successTimeout := make(<-chan time.Time)
-				if p.Task.SuccessfulStartTimeout > 0 {
-					successTimeout = time.After(time.Duration(p.Task.SuccessfulStartTimeout) * time.Second)
-				} else {
-					p.Status = "RUNNING"
-					logger.Info(fmt.Sprintf("Process '%s' has started successfully", p.Name))
-				}
 				select {
 				//? if process started successfully after timeout
 				case <-successTimeout:
@@ -132,7 +138,7 @@ func (p *Process) StartTaskManager(autoStart bool, tasks *Tasks) {
 								p.Restarts < p.Task.RestartsAttempts) {
 							for i := p.Restarts; i < p.Task.RestartsAttempts || p.Task.Restart == "always"; i++ {
 								p.Restarts++
-								// if p.Status != "RUNNING" && p.Status != "STARTED" {}
+								successTimeout = startStartTimeoutTimer(p)
 								cmd, done = startProcess(p.Task.Command, p, tasks)
 								if done == nil {
 									continue
@@ -179,6 +185,7 @@ func (p *Process) StartTaskManager(autoStart bool, tasks *Tasks) {
 						p.Status = "STOPPED"
 						//? restart if needed
 						if cmdMsg == "restart" {
+							successTimeout = startStartTimeoutTimer(p)
 							cmd, done = startProcess(p.Task.Command, p, tasks)
 							if done == nil {
 								logger.Error(fmt.Sprintf("Process '%s' failed to restart", p.Name))
