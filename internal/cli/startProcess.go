@@ -19,6 +19,8 @@ func parseSignal(signalName string) os.Signal {
 		return syscall.SIGKILL
 	case "SIGINT":
 		return syscall.SIGINT
+	case "SIGWINCH":
+		return syscall.SIGWINCH
 	default:
 		return syscall.SIGTERM
 	}
@@ -61,7 +63,7 @@ func startProcess(command string, p *Process, tasks *Tasks) (*exec.Cmd, chan err
 	if err := cmd.Start(); err != nil {
 		logger.Info(fmt.Sprintf("'%s' failed to start: %v", p.Name, err))
 		p.Status = "FATAL"
-		if shouldRestart(p, cmd.ProcessState.ExitCode()) {
+		if shouldRestart(p, getExitCode(cmd)) {
 			p.Restarts++
 			return startProcess(command, p, tasks)
 		} else {
@@ -125,9 +127,9 @@ func (p *Process) StartTaskManager(autoStart bool, tasks *Tasks) {
 					{
 						tasks.WaitGroup.Done()
 						p.ParentWg.Done()
-						isFailure := !slices.Contains(p.Task.ExpectedExitCodes, cmd.ProcessState.ExitCode())
+						isFailure := !slices.Contains(p.Task.ExpectedExitCodes, getExitCode(cmd))
 						if err != nil {
-							logger.Error(fmt.Sprintf("Process '%s' exited with error: %v", p.Name, cmd.ProcessState.ExitCode()))
+							logger.Error(fmt.Sprintf("Process '%s' exited with error: %v", p.Name, getExitCode(cmd)))
 						} else {
 							logger.Info(fmt.Sprintf("Process '%s' exited successfully", p.Name))
 						}
@@ -177,6 +179,7 @@ func (p *Process) StartTaskManager(autoStart bool, tasks *Tasks) {
 
 						//? Timeout exceeded, force kill
 						case <-time.After(time.Duration(p.Task.GracefulStopTimeout) * time.Second): // "stoptime"
+							logger.Info(fmt.Sprintf("Process '%s' did not stop in time, killing...", p.Name))
 							cmd.Process.Kill()
 						}
 
@@ -196,8 +199,9 @@ func (p *Process) StartTaskManager(autoStart bool, tasks *Tasks) {
 							}
 						}
 
+						logger.Info("Process exited with code " + fmt.Sprint(getExitCode(cmd)))
 						//? if restart failed
-						isFailure := !slices.Contains(p.Task.ExpectedExitCodes, cmd.ProcessState.ExitCode())
+						isFailure := !slices.Contains(p.Task.ExpectedExitCodes, getExitCode(cmd))
 						if isFailure {
 							p.Status = "FATAL"
 						}
@@ -208,4 +212,21 @@ func (p *Process) StartTaskManager(autoStart bool, tasks *Tasks) {
 			}
 		}
 	}()
+}
+
+func getExitCode(cmd *exec.Cmd) int {
+	if cmd.ProcessState == nil {
+		return -1
+	}
+
+	// Check if process was killed by signal on Unix systems
+	if status, ok := cmd.ProcessState.Sys().(syscall.WaitStatus); ok {
+		if status.Signaled() {
+			// Process was killed by signal
+			// Return 128 + signal number (shell convention)
+			return 128 + int(status.Signal())
+		}
+	}
+
+	return getExitCode(cmd)
 }

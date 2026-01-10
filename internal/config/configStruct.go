@@ -61,9 +61,9 @@ func (t *TaskCfg) SetDefaults() {
 	if t.StopingSignal == "" {
 		t.StopingSignal = "SIGTERM"
 	}
-	// if t.GracefulStopTimeout == 0 {
-	// 	t.GracefulStopTimeout = 0
-	// }
+	if t.GracefulStopTimeout == 0 {
+		t.GracefulStopTimeout = 1
+	}
 	if t.Environment == nil {
 		t.Environment = make(map[string]string)
 	}
