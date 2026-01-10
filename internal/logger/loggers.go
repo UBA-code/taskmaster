@@ -6,8 +6,9 @@ import (
 	"time"
 
 	"github.com/chzyer/readline"
-	"github.com/fatih/color"
 )
+
+// bonus: colored output without external dependencies
 
 var globalReadline *readline.Instance
 var logFile *os.File
@@ -31,7 +32,7 @@ func Info(message string) {
 	if err != nil {
 		fmt.Println("Failed to write to log file:", err)
 	}
-	// fmt.Println(color.YellowString(timestamp + " " + message))
+	// fmt.Println("\033[33m" + timestamp + " " + message + "\033[0m")
 	if globalReadline != nil {
 		globalReadline.Refresh()
 	}
@@ -43,7 +44,7 @@ func Error(message string) {
 	if err != nil {
 		fmt.Println("Failed to write to log file:", err)
 	}
-	fmt.Println(color.RedString(timestamp + " " + message))
+	fmt.Println("\033[31m" + timestamp + " " + message + "\033[0m")
 	if globalReadline != nil {
 		globalReadline.Refresh()
 	}
@@ -67,7 +68,7 @@ func Debug(message string) {
 	if err != nil {
 		fmt.Println("Failed to write to log file:", err)
 	}
-	fmt.Println(color.CyanString(timestamp + " " + message))
+	fmt.Println("\033[36m" + timestamp + " " + message + "\033[0m")
 	if globalReadline != nil {
 		globalReadline.Refresh()
 	}
@@ -79,7 +80,7 @@ func Warning(message string) {
 	if err != nil {
 		fmt.Println("Failed to write to log file:", err)
 	}
-	fmt.Println(color.MagentaString(timestamp + " " + message))
+	fmt.Println("\033[35m" + timestamp + " " + message + "\033[0m")
 	if globalReadline != nil {
 		globalReadline.Refresh()
 	}

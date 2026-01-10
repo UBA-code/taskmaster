@@ -44,7 +44,7 @@ func CommandHandler(command string, tasks *Tasks, configFileName string) {
 			logger.Error("Task '" + argument + "' not found.")
 		}
 
-	case "logs":
+	case "logs": // bonus
 		count := 10 // default log lines
 		if len(commandParts) > 3 || len(commandParts) < 2 {
 			logger.Error("Usage: logs <task-name>")

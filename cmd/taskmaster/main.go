@@ -14,6 +14,13 @@ import (
 )
 
 func main() {
+	defer func() {
+		if r := recover(); r != nil {
+			logger.Error(fmt.Sprintf("Panic occurred: %v", r))
+			os.Exit(1)
+		}
+	}()
+
 	if len(os.Args) < 2 {
 		panic("Usage: taskmaster <config-file>")
 	}
@@ -31,8 +38,11 @@ func main() {
 
 	//* SIGHUP handler to reload config
 	go func() {
-		<-signalChan
-		cli.ReloadConfig(tasks, os.Args[1])
+		for {
+			<-signalChan
+			logger.Debug("\nReceived SIGHUP signal, reloading configuration...")
+			cli.ReloadConfig(tasks, os.Args[1])
+		}
 	}()
 
 	//* cli loop
