@@ -12,7 +12,7 @@ func PrintStatus(tasks *Tasks) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 	defer w.Flush()
 
-	fmt.Fprintf(w, "Task\tStatus\tPID\tUptime\tRestarts\n")
+	fmt.Fprintf(w, "Task\tStatus\tPID\tUptime\tRestarts\tCommand\n")
 	for taskName, process := range tasks.Processes {
 		for taskInstanceName, intanceProcess := range process.Instances {
 			uptime := formatDuration(intanceProcess.Uptime)
@@ -31,7 +31,8 @@ func PrintStatus(tasks *Tasks) {
 				fmt.Fprintf(w, "%d\t", intanceProcess.Pid)
 			}
 			fmt.Fprintf(w, "%s\t", uptime)
-			fmt.Fprintf(w, "%d\n", intanceProcess.Restarts)
+			fmt.Fprintf(w, "%d\t", intanceProcess.Restarts)
+			fmt.Fprintf(w, "%s\n", intanceProcess.Task.Command)
 		}
 	}
 }
