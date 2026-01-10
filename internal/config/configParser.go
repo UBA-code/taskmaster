@@ -31,8 +31,10 @@ func ParseConfig(filename string) *Config {
 	}
 
 	// Set defaults for tasks that have unset fields
-	for _, task := range config.Tasks {
+	for i := range config.Tasks {
+		task := config.Tasks[i]
 		task.SetDefaults()
+		config.Tasks[i] = task
 	}
 
 	return &config
