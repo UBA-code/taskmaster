@@ -41,12 +41,25 @@ func ReloadConfig(existingTasks *Tasks, filename string) {
 
 func isDifferent(oldTask *config.TaskCfg, newTask *config.TaskCfg) bool {
 	diffEnv := len(oldTask.Environment) != len(newTask.Environment)
-	for k, v := range oldTask.Environment {
-		if val, exists := newTask.Environment[k]; !exists || val != v {
-			diffEnv = true
-			break
+	if !diffEnv {
+		for k, v := range oldTask.Environment {
+			if val, exists := newTask.Environment[k]; !exists || val != v {
+				diffEnv = true
+				break
+			}
 		}
 	}
+
+	diffExpectedExitCodes := len(oldTask.ExpectedExitCodes) != len(newTask.ExpectedExitCodes)
+	if !diffExpectedExitCodes {
+		for i, code := range oldTask.ExpectedExitCodes {
+			if newTask.ExpectedExitCodes[i] != code {
+				diffExpectedExitCodes = true
+				break
+			}
+		}
+	}
+
 	return oldTask.Command != newTask.Command ||
 		oldTask.Instances != newTask.Instances ||
 		oldTask.AutoLaunch != newTask.AutoLaunch ||
@@ -57,7 +70,7 @@ func isDifferent(oldTask *config.TaskCfg, newTask *config.TaskCfg) bool {
 		oldTask.GracefulStopTimeout != newTask.GracefulStopTimeout ||
 		oldTask.Stdout != newTask.Stdout ||
 		oldTask.Stderr != newTask.Stderr ||
-		diffEnv ||
+		diffEnv || diffExpectedExitCodes ||
 		oldTask.WorkingDirectory != newTask.WorkingDirectory ||
 		oldTask.Unmask != newTask.Unmask
 }
