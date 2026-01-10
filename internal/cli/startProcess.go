@@ -124,6 +124,7 @@ func (p *Process) StartTaskManager(autoStart bool, tasks *Tasks) {
 				case err := <-done:
 					{
 						tasks.WaitGroup.Done()
+						p.ParentWg.Done()
 						isFailure := !slices.Contains(p.Task.ExpectedExitCodes, cmd.ProcessState.ExitCode())
 						if err != nil {
 							logger.Error(fmt.Sprintf("Process '%s' exited with error: %v", p.Name, cmd.ProcessState.ExitCode()))
@@ -150,7 +151,6 @@ func (p *Process) StartTaskManager(autoStart bool, tasks *Tasks) {
 						//? if not restarting, update status
 						running = false
 						p.Status = "STOPPED"
-						p.ParentWg.Done()
 						if isFailure {
 							p.Status = "FATAL"
 						}
