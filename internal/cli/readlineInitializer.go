@@ -12,6 +12,7 @@ var completer = readline.NewPrefixCompleter(
 	readline.PcItem("stop"),
 	readline.PcItem("stop all"),
 	readline.PcItem("exit"),
+	readline.PcItem("logs"),
 	readline.PcItem("help"),
 )
 

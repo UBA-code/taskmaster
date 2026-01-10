@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/uba-code/taskmaster/internal/logger"
@@ -43,18 +44,33 @@ func CommandHandler(command string, tasks *Tasks, configFileName string) {
 			logger.Error("Task '" + argument + "' not found.")
 		}
 
+	case "logs":
+		count := 10 // default log lines
+		if len(commandParts) > 3 || len(commandParts) < 2 {
+			logger.Error("Usage: logs <task-name>")
+			return
+		} else if len(commandParts) == 3 {
+			c, err := strconv.Atoi(commandParts[2])
+			if err != nil || c < 1 {
+				logger.Error("Please provide a valid number of lines to display.")
+				return
+			}
+			count = c
+		}
+		printLogs(commandParts[1], count, tasks)
 	case "help": // bonus
 		fmt.Println("Available commands:")
-		fmt.Println("\tstatus  - Show system status")
-		fmt.Println("\treload  - Reload configuration")
-		fmt.Println("\tstart   - Start the service")
-		fmt.Println("\tstart all - Start all services")
-		fmt.Println("\trestart - Restart the service")
-		fmt.Println("\trestart all - Restart all services")
-		fmt.Println("\tstop    - Stop the service")
-		fmt.Println("\tstop all - Stop all services")
-		fmt.Println("\texit    - Exit the application")
-		fmt.Println("\thelp    - Show this help message")
+		fmt.Println("\tstatus\t\t\t\t- Show system status")
+		fmt.Println("\treload\t\t\t\t- Reload configuration")
+		fmt.Println("\tstart\t\t\t\t- Start the service")
+		fmt.Println("\tstart all\t\t\t- Start all services")
+		fmt.Println("\trestart\t\t\t\t- Restart the service")
+		fmt.Println("\trestart all\t\t\t- Restart all services")
+		fmt.Println("\tstop\t\t\t\t- Stop the service")
+		fmt.Println("\tstop all\t\t\t- Stop all services")
+		fmt.Println("\tlogs [task-name] [lines]\t- Show the last 'lines' of logs for the specified task (default 10)")
+		fmt.Println("\texit\t\t\t\t- Exit the application")
+		fmt.Println("\thelp\t\t\t\t- Show this help message")
 	default:
 		fmt.Printf("Unknown command: %s. Type 'help' for a list of commands.\n", command)
 	}
