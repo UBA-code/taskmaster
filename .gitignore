@@ -34,3 +34,8 @@ bin/
 
 # Logs
 *.log
+
+# configs
+config-example.yaml
+config.yaml
+example.yaml

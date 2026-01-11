@@ -22,8 +22,12 @@ func main() {
 	}()
 
 	if len(os.Args) < 2 {
-		panic("Usage: taskmaster <config-file>")
+		fmt.Fprintf(os.Stderr, "\033[31mUsage: taskmaster <config-file>\033[0m\n")
+		fmt.Fprintf(os.Stderr, "\033[31mA config-example.yaml is created to help you get started.\033[0m\n")
+		config.GenerateConfig() // bonus
+		os.Exit(1)
 	}
+
 	var cfg = config.ParseConfig(os.Args[1])
 	_ = cfg
 	logger.InitializeLogFile()
