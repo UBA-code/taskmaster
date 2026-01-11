@@ -228,5 +228,5 @@ func getExitCode(cmd *exec.Cmd) int {
 		}
 	}
 
-	return getExitCode(cmd)
+	return cmd.ProcessState.ExitCode()
 }
