@@ -7,7 +7,7 @@ build:
 	go build -o $(BINARY) ./cmd/taskmaster
 
 run: build
-	$(BINARY) example.yml
+	$(BINARY) config-example.yaml
 
 clean:
 	rm -rf bin/
