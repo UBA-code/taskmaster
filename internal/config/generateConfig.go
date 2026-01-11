@@ -7,7 +7,7 @@ import (
 func GenerateConfig() {
 	content := `tasks:
   pinger:
-    command: "ping 8.8.8.8.8"
+    command: "ping 8.8.8.8"
     instances: 5
     autoLaunch: true
     restart: on-failure # always, never, on-failure
@@ -17,8 +17,8 @@ func GenerateConfig() {
     restartsAttempts: 2
     stopingSignal: SIGTERM
     gracefulStopTimeout: 15 # seconds
-    stdout: /var/log/sleeper_stdout.log
-    stderr: /var/log/sleeper_stderr.log
+    stdout: /tmp/pinger_stdout.log
+    stderr: /tmp/pinger_stderr.log
     environment:
       ENV_VAR1: value1
       ENV_VAR2: value2
